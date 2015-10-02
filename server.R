@@ -8,10 +8,11 @@ shinyServer(function(input, output) {
       } 
       else if (input$language == 2) {
         v <- getNounCountTable(input$selection)
-        par(family = "AppleGothic")
+        #par(family = "AppleGothic")
+        par(family = "NanumGothic")
       }
       wordcloud(names(v), v, scale=c(input$scale[2],input$scale[1]),
-                min.freq = input$freq, max.words = input$max,
+                min.freq = 1, max.words = input$max,
                 random.order = TRUE, random.color = TRUE, 
                 colors = brewer.pal(8, "Dark2"))
     })

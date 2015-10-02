@@ -20,15 +20,12 @@ shinyUI(fluidPage(
                                   selected = 1))
             ),           
             hr(),
-            sliderInput("freq",
-                        "Minimum Frequency:",
-                        min = 1, max = 5,  value = 1),
             sliderInput("max",
                         "Maximum Words:",
-                        min = 1, max = 20, value = 10),
+                        min = 1, max = 20, value = 12),
             sliderInput("scale",
                         "Scale Range of Word Cloud:",
-                        min = 1, max = 10, value = c(2, 6))
+                        min = 1, max = 10, value = c(2, 5))
         ),
 
         mainPanel(
@@ -37,7 +34,7 @@ shinyUI(fluidPage(
             htmlOutput("ref"),
             br(),
             htmlOutput("text_en"),
-            hr(),
+            br(),
             htmlOutput("text_ko")
         )
     )
