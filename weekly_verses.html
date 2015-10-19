@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>IIBC Weekly Verses</title>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
     <link href='http://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
     <style>    
       .verse {
@@ -57,8 +57,10 @@
             return d.ktext;
         });
       }
-
-      d3.csv("memory_verses.csv", render);
+      
+      //var url = "https://github.com/Hohyun/IIBC_Weekly_Verses/raw/master/iibc_verses.csv";
+      var url = "https://raw.githubusercontent.com/Hohyun/IIBC_Weekly_Verses/master/memory_verses.csv";
+      d3.csv(url, render);
 
     </script>
   </body>
