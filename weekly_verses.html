@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>IIBC Weekly Verses</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
+    <style>    
+      .verse {
+        font-family: 'Poiret One', cursive;
+        font-weight: normal;
+        font-size: 12pt;
+        background-color: #F5F5F0;
+        padding: 4px;
+        margin: 4px;
+      }
+      .header {
+        font-weight: bold;
+        padding-left: 4px;
+      }
+      section {
+        background-color: #33CC33;
+        margin: 10px;
+        padding: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+
+      function render(data){
+
+        var nested = d3.nest()
+                       .key(function (d) { return d.week; })
+                       .entries(data);
+
+        var g = d3.select("body").selectAll("section")
+                  .data(data)
+                  .enter()
+                  .append("section");
+
+        g.append("span")
+         .attr("class", "header")
+         .text(function (d) {
+            return d.verses + " (" + d.week + ")";
+        });
+
+        g.append("p")
+         .attr("class","verse")
+         .text(function (d) {
+            return d.etext;
+        });
+
+        g.append("p")
+         .attr("class", "verse")
+         .text(function (d) {
+            return d.ktext;
+        });
+      }
+
+      d3.csv("memory_verses.csv", render);
+
+    </script>
+  </body>
+</html>
