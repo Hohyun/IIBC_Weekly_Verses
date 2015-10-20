@@ -6,62 +6,187 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
     <link href='http://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
     <style>    
-      .verse {
+      .verse-e {
         font-family: 'Poiret One', cursive;
-        font-weight: normal;
+        font-weight: bolder;
         font-size: 12pt;
         background-color: #F5F5F0;
         padding: 4px;
         margin: 4px;
+        margin-top: 8px;
       }
-      .header {
+      .verse-k {
+        font-weight: normal;
+        font-size: 11pt;
+        background-color: #F5F5F0;
+        padding: 4px;
+        margin: 4px;
+        margin-top: 8px;
+      }
+      .header-ref {
         font-weight: bold;
+        background-color: #DBFFDB;
+        padding: 2px;
         padding-left: 4px;
+        padding-right: 4px;
+        margin: 4px;
+      }
+      .header-date {
+        font-weight: normal;
+        font-size: 10pt;
+        padding: 4px;
+        padding-left: 20px;
+      }      
+      .showhide {
+        font-size: 11pt;
+        float: right;
+        padding: 2px;
+        margin-right: 4px;
+      }
+      .control {
+        text-align: center;
+      }
+      .control button {
+        font-weight: bold;
+        font-size: 12px;
+        margin-left: 10px;
+        margin-right: 10px;
+      }
+      section#title {
+        background-color: #52CC29;
       }
       section {
-        background-color: #33CC33;
+        /*background-color: #33CC33;*/
+        background-color: #33CCFF;
         margin: 10px;
         padding: 6px;
+        padding-top: 10px;
+      }
+      header {
+        text-align: center;
+        /*background-color: #33CCFF;*/
       }
     </style>
   </head>
   <body>
+    <section id="title">
+      <header>
+        <h2>IIBC Memory Verses</h2>
+      </header>
+    </section>  
+    <div class="control">
+      <button onclick="show(1)">Current Week</button>
+      <button onclick="show(2)">2 Weeks</button>
+      <button onclick="show(4)">4 Weeks</button>
+      <button onclick="show(12)">12 Weeks</button>
+      <button onclick="show(520)">All Verses</button>  
+    </div>
+
     <script>
+      function render(data, max_week){
 
-      function render(data){
+        var showflag = true;
+        var colorscale = d3.scale.category20();
+        var format = d3.time.format("%Y %b %d");
+        var duration = 1000;
+        var lastweek = d3.max(data, function(d) { return d.week; });
 
-        var nested = d3.nest()
-                       .key(function (d) { return d.week; })
-                       .entries(data);
-
-        var g = d3.select("body").selectAll("section")
-                  .data(data)
+        var g = d3.select("body").selectAll("section#main")
+                  .data(data.filter(function (d) {
+                    return (lastweek - d.week) < max_week ;
+                  }))
                   .enter()
-                  .append("section");
+                  .append("section")
+                  .attr("id", "main")
+                  .style("background-color", function (d) {
+                    var c = Math.random() * 20;
+                    return colorscale(c.toFixed(0));
+                  });
+
+        d3.select("body").selectAll("section#main")
+          .data(data.filter(function (d) {
+            return (lastweek - d.week) < max_week ;
+          }))
+          .exit()
+          .remove();
 
         g.append("span")
-         .attr("class", "header")
+         .attr("class", "header-ref")
          .text(function (d) {
-            return d.verses + " (" + d.week + ")";
+            return d.ref1;
+        });
+
+        g.append("span")
+         .attr("class", "header-date")
+         .text(function (d) {
+            var period = format(d['date']) + " ~ ";
+            var end = d['date'];
+            end.setDate(d['date'].getDate() + 6);
+            period += format(end) + "  [week: " + d.week + "]";
+            return period;
+        });       
+
+        // show and hide text  
+        var hideshow = g.append("button")
+                    .attr("class", "showhide")
+                    .text("hide");
+
+        hideshow.on("click", function() {
+          if (showflag) {
+            showflag = false;
+            d3.select(this)
+              .text("show");
+            d3.select(this.nextSibling)
+              .transition()
+              .duration(duration)
+              .style("color", "#F5F5F0");
+            d3.select(this.nextSibling.nextSibling)
+              .transition()
+              .duration(duration)
+              .style("color", "#F5F5F0");
+          } else {
+            showflag = true;
+            d3.select(this)
+              .text("hide");
+            d3.select(this.nextSibling)
+              .transition()
+              .duration(duration)
+              .style("color", "black");
+            d3.select(this.nextSibling.nextSibling)
+              .transition()
+              .duration(duration)
+              .style("color", "black");             
+          }
         });
 
         g.append("p")
-         .attr("class","verse")
+         .attr("class","verse-e")
          .text(function (d) {
             return d.etext;
         });
 
         g.append("p")
-         .attr("class", "verse")
+         .attr("class", "verse-k")
          .text(function (d) {
             return d.ktext;
         });
       }
       
-      //var url = "https://github.com/Hohyun/IIBC_Weekly_Verses/raw/master/iibc_verses.csv";
-      var url = "https://raw.githubusercontent.com/Hohyun/IIBC_Weekly_Verses/master/memory_verses.csv";
-      d3.csv(url, render);
+      function type(d) {
+        d.week = +d.week;
+        d.date = new Date(d.date);
+        return d;
+      }
 
+      function show(max_week) {
+        var url = "https://raw.githubusercontent.com/Hohyun/IIBC_Weekly_Verses/master/memory_verses.csv";
+        // url = "memory_verses.csv";
+        d3.csv(url, type, function(d) {
+          render(d, max_week);
+        }); 
+      }
+      // display last week's verse only
+      show(1);
     </script>
   </body>
 </html>
