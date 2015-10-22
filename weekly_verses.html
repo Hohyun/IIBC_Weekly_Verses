@@ -4,11 +4,10 @@
     <meta charset="utf-8">
     <title>IIBC Weekly Verses</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
-    <link href='http://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
     <style>    
       .verse-e {
-        font-family: 'Poiret One', cursive;
-        font-weight: bolder;
+        font-weight: normal;
+        font-family: 'Trebuchet MS', 'Gill Sans', sans-serif;
         font-size: 12pt;
         background-color: #F5F5F0;
         padding: 4px;
@@ -17,54 +16,62 @@
       }
       .verse-k {
         font-weight: normal;
-        font-size: 11pt;
+        font-size: 12pt;
         background-color: #F5F5F0;
         padding: 4px;
         margin: 4px;
         margin-top: 8px;
       }
+      header {
+        text-align: center;
+        /*background-color: #33CCFF;*/
+      }
       .header-ref {
+        color: white;
         font-weight: bold;
-        background-color: #DBFFDB;
+        background-color: #474719;
+        border: 4px;
         padding: 2px;
         padding-left: 4px;
         padding-right: 4px;
         margin: 4px;
       }
       .header-date {
+        color: white;
+        float: right;
         font-weight: normal;
         font-size: 10pt;
         padding: 4px;
         padding-left: 20px;
       }      
       .showhide {
-        font-size: 11pt;
         float: right;
+        font-weight: 800;
+        font-size: 11pt;
         padding: 2px;
-        margin-right: 4px;
+        padding-left: 8px;
+        padding-right: 8px;
       }
-      .control {
+      .control-group {
         text-align: center;
       }
-      .control button {
+      .control-group button {
         font-weight: bold;
         font-size: 12px;
         margin-left: 10px;
         margin-right: 10px;
       }
-      section#title {
-        background-color: #52CC29;
+      h2 {
+        margin: 0px;
       }
       section {
-        /*background-color: #33CC33;*/
-        background-color: #33CCFF;
         margin: 10px;
         padding: 6px;
         padding-top: 10px;
       }
-      header {
-        text-align: center;
-        /*background-color: #33CCFF;*/
+      section#title {
+        color: white;
+        background-color: #474719;
       }
     </style>
   </head>
@@ -74,8 +81,8 @@
         <h2>IIBC Memory Verses</h2>
       </header>
     </section>  
-    <div class="control">
-      <button onclick="show(1)">Current Week</button>
+    <div class="control-group">
+      <button onclick="show(1)">This Week</button>
       <button onclick="show(2)">2 Weeks</button>
       <button onclick="show(4)">4 Weeks</button>
       <button onclick="show(12)">12 Weeks</button>
@@ -86,8 +93,12 @@
       function render(data, max_week){
 
         var showflag = true;
-        var colorscale = d3.scale.category20();
-        var format = d3.time.format("%Y %b %d");
+        var colorscale = d3.scale.ordinal()
+                           .domain([0,1,2,3])
+                           .range(["#1f77b4", "#2ca02c", "#9467bd", "#ff7f0e"]);
+
+        var format1 = d3.time.format("%Y.%m.%d");
+        var format2 = d3.time.format("%m.%d");
         var duration = 1000;
         var lastweek = d3.max(data, function(d) { return d.week; });
 
@@ -98,9 +109,8 @@
                   .enter()
                   .append("section")
                   .attr("id", "main")
-                  .style("background-color", function (d) {
-                    var c = Math.random() * 20;
-                    return colorscale(c.toFixed(0));
+                  .style("background-color", function () {
+                    return colorscale(this.__data__.week % 4);
                   });
 
         d3.select("body").selectAll("section#main")
@@ -119,23 +129,23 @@
         g.append("span")
          .attr("class", "header-date")
          .text(function (d) {
-            var period = format(d['date']) + " ~ ";
+            var period = format1(d['date']) + " ~ ";
             var end = d['date'];
             end.setDate(d['date'].getDate() + 6);
-            period += format(end) + "  [week: " + d.week + "]";
+            period += format2(end) + "  [Week: " + d.week + "]";
             return period;
         });       
 
         // show and hide text  
         var hideshow = g.append("button")
                     .attr("class", "showhide")
-                    .text("hide");
+                    .text("HIDE");
 
         hideshow.on("click", function() {
           if (showflag) {
             showflag = false;
             d3.select(this)
-              .text("show");
+              .text("SHOW");
             d3.select(this.nextSibling)
               .transition()
               .duration(duration)
@@ -147,7 +157,7 @@
           } else {
             showflag = true;
             d3.select(this)
-              .text("hide");
+              .text("HIDE");
             d3.select(this.nextSibling)
               .transition()
               .duration(duration)
@@ -161,13 +171,13 @@
 
         g.append("p")
          .attr("class","verse-e")
-         .text(function (d) {
+         .html(function (d) {
             return d.etext;
         });
 
         g.append("p")
          .attr("class", "verse-k")
-         .text(function (d) {
+         .html(function (d) {
             return d.ktext;
         });
       }
@@ -179,8 +189,8 @@
       }
 
       function show(max_week) {
-        var url = "https://raw.githubusercontent.com/Hohyun/IIBC_Weekly_Verses/master/memory_verses.csv";
-        // url = "memory_verses.csv";
+        // var url = "https://raw.githubusercontent.com/Hohyun/IIBC_Weekly_Verses/master/memory_verses.csv";
+        url = "memory_verses.csv";
         d3.csv(url, type, function(d) {
           render(d, max_week);
         }); 
