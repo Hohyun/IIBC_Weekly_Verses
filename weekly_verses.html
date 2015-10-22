@@ -189,8 +189,8 @@
       }
 
       function show(max_week) {
-        // var url = "https://raw.githubusercontent.com/Hohyun/IIBC_Weekly_Verses/master/memory_verses.csv";
-        url = "memory_verses.csv";
+        var url = "https://raw.githubusercontent.com/Hohyun/IIBC_Weekly_Verses/master/memory_verses.csv";
+        // url = "memory_verses.csv";
         d3.csv(url, type, function(d) {
           render(d, max_week);
         }); 
