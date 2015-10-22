@@ -34,7 +34,7 @@
         padding: 2px;
         padding-left: 4px;
         padding-right: 4px;
-        margin: 4px;
+        margin: 6px;
       }
       .header-date {
         color: white;
@@ -46,8 +46,8 @@
       }      
       .showhide {
         float: right;
-        font-weight: 800;
-        font-size: 11pt;
+        font-weight: bold;
+        font-size: 10pt;
         padding: 2px;
         padding-left: 8px;
         padding-right: 8px;
@@ -57,7 +57,7 @@
       }
       .control-group button {
         font-weight: bold;
-        font-size: 12px;
+        font-size: 10pt;
         margin-left: 10px;
         margin-right: 10px;
       }
@@ -139,13 +139,13 @@
         // show and hide text  
         var hideshow = g.append("button")
                     .attr("class", "showhide")
-                    .text("HIDE");
+                    .text("Hide");
 
         hideshow.on("click", function() {
           if (showflag) {
             showflag = false;
             d3.select(this)
-              .text("SHOW");
+              .text("Show");
             d3.select(this.nextSibling)
               .transition()
               .duration(duration)
@@ -157,7 +157,7 @@
           } else {
             showflag = true;
             d3.select(this)
-              .text("HIDE");
+              .text("Hide");
             d3.select(this.nextSibling)
               .transition()
               .duration(duration)
